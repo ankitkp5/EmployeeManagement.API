@@ -10,4 +10,11 @@ public interface IEmployeeService
     Task<(Employee? Employee, string? Error, int StatusCode)> CreateAsync(CreateEmployeeDto dto);
     Task<(Employee? Employee, string? Error, int StatusCode)> UpdateAsync(int id, UpdateEmployeeDto dto);
     Task<bool> DeleteAsync(int id);
+
+    // Bulk operations
+    Task<(List<Employee> Employees, string? Error, int StatusCode)>
+        BulkCreateAsync(List<CreateEmployeeDto> employees);
+
+    Task<(int DeletedCount, string? Error, int StatusCode)>
+        BulkDeleteAsync(List<int> employeeIds);
 }

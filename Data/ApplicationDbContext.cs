@@ -12,6 +12,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<Department> Departments => Set<Department>();
+    public DbSet<Attendance> Attendances { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -47,6 +48,34 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(d => d.Description).HasMaxLength(500);
             entity.Property(d => d.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
             entity.HasIndex(d => d.DepartmentName).IsUnique();
+        });
+
+        modelBuilder.Entity<Attendance>(entity =>
+        {
+            entity.ToTable("Attendances");
+
+            entity.HasKey(a => a.AttendanceId);
+
+            entity.Property(a => a.AttendanceDate)
+                .HasColumnType("date");
+
+            entity.Property(a => a.Status)
+                .HasMaxLength(20)
+                .IsRequired();
+
+            entity.Property(a => a.Remarks)
+                .HasMaxLength(500);
+
+            entity.HasIndex(a => new
+            {
+                a.EmployeeId,
+                a.AttendanceDate
+            }).IsUnique();
+
+            entity.HasOne(a => a.Employee)
+                .WithMany()
+                .HasForeignKey(a => a.EmployeeId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }
